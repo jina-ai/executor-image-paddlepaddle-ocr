@@ -10,7 +10,7 @@ and we add a `coordinates` tag containing the bounding box coordinates. The resu
 
 ## Usage
 
-Use the prebuilt images from Jina Hub in your Python codes, add it to your Flow and extract text from an image:
+Use the prebuilt images from Jina Hub in your Python code, add it to your Flow and extract text from an image:
 
 ```python
 from jina import Flow
