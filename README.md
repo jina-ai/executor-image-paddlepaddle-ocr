@@ -30,6 +30,19 @@ with f:
 
 ## GPU usage 
 
+This executor also offers a GPU version. To use it, make sure to pass `'use_gpu'=True`, as the initialization parameter, and `gpus='all'` when adding the containerized Executor to the Flow. See the [Executor on GPU](https://docs.jina.ai/tutorials/gpu-executor/) section of Jina documentation for more details.
+
+Here's how you would modify the example above to use a GPU
+
+```python
+from jina import Flow
+	
+f = Flow().add(
+    uses='jinahub+docker://PaddlepaddleOCR',
+    uses_with={'use_gpu':True},
+    gpus='all
+    )
+```
 ## Reference
 
 [PaddlepaddleOCR repository](https://github.com/PaddlePaddle/PaddleOCR) 
