@@ -1,2 +1,4 @@
 manifest_version: 1
 name: PaddlepaddleOCR
+url: https://github.com/jina-ai/executor-image-paddlepaddle-ocr
+keywords: [PaddlePaddle, OCR, images]
