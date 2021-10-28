@@ -40,7 +40,7 @@ class PaddlepaddleOCR(Executor):
         if docs is None:
             return
         for doc in docs:
-            if doc.uri == '':
+            if not doc.uri :
                 missing_doc_ids.append(doc.id)
                 continue
             for r in self.model.ocr(doc.uri, cls=True):
