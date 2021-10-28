@@ -17,6 +17,8 @@ def test_one_doc(ocr : PaddlepaddleOCR):
     ocr.extract(docs=docs)
     for d in docs:
         assert len(d.chunks) == 3
+    assert docs[0].chunks[0].text == 'Multimodal Document'
+    assert docs[0].chunks[1].text == 'SearchinJina'
 
 def test_two_docs(ocr : PaddlepaddleOCR):
 
@@ -25,7 +27,10 @@ def test_two_docs(ocr : PaddlepaddleOCR):
     docs = DocumentArray([doc1,doc2])
     ocr.extract(docs=docs)
     assert len(docs) == 2 
-
+    assert docs[0].chunks[0].text == 'Multimodal Document'
+    assert docs[0].chunks[0].tags['coordinates'] == [[336.0, 310.0], [1370.0, 316.0], [1369.0, 389.0], [336.0, 383.0]]
+    assert docs[1].chunks[0].text == 'Support'
+    assert docs[1].chunks[0].tags['coordinates'] == [[20.0, 9.0], [134.0, 9.0], [134.0, 42.0], [20.0, 42.0]]
 
 def test_no_documents(ocr : PaddlepaddleOCR):
     docs = DocumentArray()
@@ -50,5 +55,7 @@ def test_lang_ru():
     docs.append(doc)
     ocr = PaddlepaddleOCR(lang='ru')
     ocr.extract(docs=docs)
-    for d in docs : 
-        assert len(d.chunks) == 2  
+    assert docs[0].chunks[0].text == 'LOM' 
+    assert docs[0].chunks[0].tags['coordinates'] == [[142.0, 49.0], [300.0, 45.0], [301.0, 105.0], [143.0, 109.0]]
+    assert docs[0].chunks[1].text == 'MPOLAETC8'
+    assert docs[0].chunks[1].tags['coordinates'] == [[29.0, 134.0], [433.0, 131.0], [433.0, 183.0], [29.0, 186.0]]
