@@ -50,3 +50,5 @@ def test_lang_ru():
     docs.append(doc)
     ocr = PaddlepaddleOCR(lang='ru')
     ocr.extract(docs=docs)
+    for d in docs : 
+        assert len(d.chunks) == 2  
