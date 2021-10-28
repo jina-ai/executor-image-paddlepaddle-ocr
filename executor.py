@@ -49,4 +49,5 @@ class PaddlepaddleOCR(Executor):
                 c = Document(text=text, weight=score)
                 c.tags['coordinates'] = coord
                 doc.chunks.append(c)
-        self.logger.warning(f'No uri passed for the following Documents:{", ".join(missing_doc_ids)}')
+        if len(missing_doc_ids) > 0 :
+            self.logger.warning(f'No uri passed for the following Documents:{", ".join(missing_doc_ids)}')
