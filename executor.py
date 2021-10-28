@@ -17,7 +17,7 @@ class PaddlepaddleOCR(Executor):
         `use_angle_cls=True`,
         `lang='en'` means the language you want to extract, 
         `use_gpu=False` whether you want to use gpu or not.
-        More information can be found here https://github.com/PaddlePaddle/PaddleOCR 
+        Other params can be found in `paddleocr --help`. More information can be found here https://github.com/PaddlePaddle/PaddleOCR 
         """
         self._paddleocr_args = paddleocr_args or {}
         self._paddleocr_args.setdefault('use_angle_cls', True) 
@@ -32,8 +32,9 @@ class PaddlepaddleOCR(Executor):
     @requests()
     def extract(self, docs: Optional[DocumentArray] = None, **kwargs):
         """
-        Load the image from Document.uri, extract text and bounding boxes. The result is stored
-        into chunks
+        Load the image from `uri`, extract text and bounding boxes. The text is stored in the  
+        `text` attribute of the chunks and the coordinates are stored in the `tags['coordinates']` as a list. 
+        The `tags['coordinates']`  contains four lists, each of which corresponds to the `(x, y)` coordinates one corner of the bounding box. 
         :param docs: the input Documents with image URI in the `uri` field
         """
         missing_doc_ids = []
@@ -48,4 +49,4 @@ class PaddlepaddleOCR(Executor):
                 c = Document(text=text, weight=score)
                 c.tags['coordinates'] = coord
                 doc.chunks.append(c)
-        self.logger.error(f'No uri passed for the following Documents:{", ".join(missing_doc_ids)}')
+        self.logger.warning(f'No uri passed for the following Documents:{", ".join(missing_doc_ids)}')
