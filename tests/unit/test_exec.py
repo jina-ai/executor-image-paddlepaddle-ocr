@@ -2,6 +2,7 @@ from executor import PaddlepaddleOCR
 import pytest
 from pathlib import Path
 from jina import Document, DocumentArray
+import numpy as np
 
 @pytest.fixture(scope="module")
 def ocr() -> PaddlepaddleOCR:
@@ -46,6 +47,17 @@ def test_docs_no_uris(ocr : PaddlepaddleOCR):
 
 def test_none_docs(ocr: PaddlepaddleOCR):
     ocr.extract(docs=None)
+
+
+def test_clip_any_image_shape(ocr : PaddlepaddleOCR):
+    docs = DocumentArray([Document(blob=np.ones((224, 224, 3), dtype=np.uint8))])
+
+    ocr.extract(docs=docs)
+    assert len(docs) == 1
+
+    docs = DocumentArray([Document(blob=np.ones((100, 100, 3), dtype=np.uint8))])
+    ocr.extract(docs=docs)
+    assert len(docs) == 1
 
 def test_lang_ru():
 
