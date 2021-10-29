@@ -2,6 +2,12 @@ from jina import Executor, DocumentArray, Document, requests
 from paddleocr import PaddleOCR
 from typing import Optional, Dict
 from jina.logging.logger import JinaLogger
+import urllib
+import random 
+import string
+import tempfile
+import os 
+import io
 
 class PaddlepaddleOCR(Executor):
     """
@@ -10,6 +16,7 @@ class PaddlepaddleOCR(Executor):
     def __init__(
         self,
         paddleocr_args : Optional[Dict] = None,
+        copy_uri: bool = True,
         **kwargs
         ):
         """
@@ -25,6 +32,7 @@ class PaddlepaddleOCR(Executor):
         self._paddleocr_args.setdefault('use_gpu', False)
         super(PaddlepaddleOCR, self).__init__(**kwargs)
         self.model = PaddleOCR(**self._paddleocr_args)
+        self.copy_uri = copy_uri
         self.logger = JinaLogger(
             getattr(self.metas, 'name', self.__class__.__name__)
         ).logger
@@ -44,10 +52,37 @@ class PaddlepaddleOCR(Executor):
             if not doc.uri :
                 missing_doc_ids.append(doc.id)
                 continue
-            for r in self.model.ocr(doc.uri, cls=True):
-                coord, (text, score) = r
-                c = Document(text=text, weight=score)
-                c.tags['coordinates'] = coord
-                doc.chunks.append(c)
-        if len(missing_doc_ids) > 0 :
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                source_fn = (
+                    self._save_uri_to_tmp_file(doc.uri, tmpdir)
+                    if self._is_datauri(doc.uri)
+                    else doc.uri
+                )
+                for r in self.model.ocr(source_fn, cls=True):
+                    coord, (text, score) = r
+                    c = Document(text=text, weight=score)
+                    c.tags['coordinates'] = coord
+                    if self.copy_uri:
+                        c.tags['img_uri'] = doc.uri
+                    doc.chunks.append(c)
+        if missing_doc_ids  :
             self.logger.warning(f'No uri passed for the following Documents:{", ".join(missing_doc_ids)}')
+
+    def _is_datauri(self, uri):
+        scheme = urllib.parse.urlparse(uri).scheme
+        return scheme in {'data'}
+
+    def _save_uri_to_tmp_file(self, uri, tmpdir):
+        req = urllib.request.Request(uri, headers={'User-Agent': 'Mozilla/5.0'})
+        tmp_fn = os.path.join(
+            tmpdir,
+            ''.join([random.choice(string.ascii_lowercase) for i in range(10)])
+            + '.png',
+        )
+        with urllib.request.urlopen(req) as fp:
+            buffer = fp.read()
+            binary_fn = io.BytesIO(buffer)
+            with open(tmp_fn, 'wb') as f:
+                f.write(binary_fn.read())
+        return tmp_fn
