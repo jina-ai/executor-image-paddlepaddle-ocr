@@ -71,3 +71,10 @@ def test_lang_ru():
     assert docs[0].chunks[0].tags['coordinates'] == [[142.0, 49.0], [300.0, 45.0], [301.0, 105.0], [143.0, 109.0]]
     assert docs[0].chunks[1].text == 'MPOLAETC8'
     assert docs[0].chunks[1].tags['coordinates'] == [[29.0, 134.0], [433.0, 131.0], [433.0, 183.0], [29.0, 186.0]]
+
+@pytest.mark.parametrize('batch_size', [1, 2, 4, 8])
+def test_batch_size(ocr : PaddlepaddleOCR, batch_size: int):
+    docs = DocumentArray([Document(uri=str(Path(__file__).parents[1] / 'toy-data' / 'test1.png')) for _ in range(32)])
+    ocr.extract(docs=docs)
+    for doc in docs :
+        assert doc.chunks[0].text == 'Multimodal Document'
