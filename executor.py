@@ -24,7 +24,9 @@ class PaddlepaddleOCR(Executor):
         `use_angle_cls=True`,
         `lang='en'` means the language you want to extract, 
         `use_gpu=False` whether you want to use gpu or not.
-        Other params can be found in `paddleocr --help`. More information can be found here https://github.com/PaddlePaddle/PaddleOCR 
+        Other params can be found in `paddleocr --help`. More information can be found here https://github.com/PaddlePaddle/PaddleOCR
+        :param copy_uri: Set to `True` to store the image `uri` at the `.tags['image_uri']` of the chunks that are extracted from the image.
+        By default, `copy_uri=True`. Set this to `False` when you don't want to store umage `uri` with the chunks 
         """
         self._paddleocr_args = paddleocr_args or {}
         self._paddleocr_args.setdefault('use_angle_cls', True) 
