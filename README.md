@@ -21,8 +21,20 @@ docs = DocumentArray()
 doc = Document(uri='/your/image/path')
 docs.append(doc)
 
+def print_results(resp):
+    """
+    Function to print the extracted text from the response after
+    applying OCR to the input images
+
+    :resp: response resulting for the executor
+    """
+
+    for doc in resp.docs:
+        for chunk in doc.chunks:
+            print(chunk.text)
+            
 with f:
-    f.post(on='/extract', inputs=docs, on_done=lambda resp: print(resp.docs[0].text))
+    f.post(on='/extract', inputs=docs, on_done=print_results)
 ```
 ## Returns 
 
